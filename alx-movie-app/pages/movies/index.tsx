@@ -1,4 +1,4 @@
-import { SetStateAction, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Button from "@/components/commons/Button";
 import Loading from "@/components/commons/Loading";
 import MovieCard from "@/components/commons/MovieCard";

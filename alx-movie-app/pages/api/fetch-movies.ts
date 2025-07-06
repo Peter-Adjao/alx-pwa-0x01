@@ -36,8 +36,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const movies: MoviesProps[] = results;
 
     return res.status(200).json({ movies });
-  } catch (error: any) {
-    console.error("Movie API error:", error.message);
-    return res.status(500).json({ error: "Failed to fetch movies" });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Movie API error:", error.message);
+      return res.status(500).json({ error: error.message });
+    } else {
+      console.error("Unknown error:", error);
+      return res.status(500).json({ error: "An unexpected error occurred" });
+    }
   }
 }
