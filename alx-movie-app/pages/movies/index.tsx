@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { SetStateAction, useCallback, useEffect, useState } from "react";
 import Button from "@/components/commons/Button";
 import Loading from "@/components/commons/Loading";
 import MovieCard from "@/components/commons/MovieCard";
@@ -29,10 +29,6 @@ function Movies() {
         },
       });
 
-      console.log("Status:", response.status);
-      console.log("Status text:", response.statusText);
-      console.log("URL:", response.url);
-
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Fetch error:", response.status, response.statusText, errorText);
@@ -41,23 +37,21 @@ function Movies() {
 
       const data = await response.json();
       setMovies(data.movies);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error("Error fetching movies:", err.message);
+        setError(err.message);
+      } else {
+        console.error("Unknown error:", err);
+        setError("An unexpected error occurred.");
+      }
     } finally {
       setLoading(false);
     }
   }, [page, year, genre]);
 
   useEffect(() => {
-    const runFetch = async () => {
-      try {
-        await fetchMovies();
-      } catch (err: any) {
-        console.error("Runtime error while fetching:", err.message);
-      }
-    };
-
-    runFetch();
+    fetchMovies();
   }, [fetchMovies]);
 
   return (
@@ -67,7 +61,8 @@ function Movies() {
           <input
             type="text"
             placeholder="Search for a movie..."
-            className="border-2 w-full md:w-96 border-[#E2D609] outline-none bg-transparent px-4 py-2 rounded-full text-white placeholder-gray-400" />
+            className="border-2 w-full md:w-96 border-[#E2D609] outline-none bg-transparent px-4 py-2 rounded-full text-white placeholder-gray-400"
+          />
 
           <select
             onChange={(event: React.ChangeEvent<HTMLSelectElement>) => setYear(Number(event.target.value))}
@@ -86,7 +81,7 @@ function Movies() {
 
         <div className="flex flex-col md:flex-row items-center justify-between">
           <h1 className="text-lg md:text-6xl font-bold">
-            {year || "Recent"} {} Movie List
+            {year || "Recent"} Movie List
           </h1>
           <div className="flex flex-wrap md:flex-nowrap gap-y-4 space-x-2 md:space-x-4 mt-4 md:mt-0">
             {["All", "Animation", "Comedy", "Fantasy"].map((genreOption: string, key: number) => (
@@ -103,7 +98,9 @@ function Movies() {
               key={key}
               title={movie?.titleText?.text}
               posterImage={movie?.primaryImage?.url}
-              releaseYear={movie?.releaseYear?.year} id={""} />
+              releaseYear={movie?.releaseYear?.year}
+              id={""}
+            />
           ))}
         </div>
 

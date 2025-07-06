@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, SetStateAction } from "react";
 
 export interface ComponentProps {
   children: ReactNode
@@ -37,3 +37,7 @@ export interface MoviesProps {
   titleText: TitleText
   releaseYear: ReleaseYear
 }
+
+type Props = {
+  setError: (value: SetStateAction<string | null>) => void;
+};
